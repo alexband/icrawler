@@ -49,6 +49,8 @@ class ThreadPool(object):
         self.workers = []
         self.lock = Lock()
         self.logger = logging.getLogger(self.name)
+        fh = logging.FileHandler('./downloader_output.txt')
+        self.logger.addHandler(fh)
 
     def init_workers(self, *args, **kwargs):
         self.workers = []
