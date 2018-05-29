@@ -48,7 +48,7 @@ class FlickrFeeder(Feeder):
         url = base_url + urlencode(params)
         per_page = params.get('per_page', 100)
         page = params.get('page', 1)
-        page_max = int(math.ceil(20000.0 / per_page))
+        page_max = int(math.ceil(10000.0 / per_page))
         for i in range(page, page + page_max):
             if self.signal.get('reach_max_num'):
                 break

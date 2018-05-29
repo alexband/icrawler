@@ -21,7 +21,7 @@ class CachedQueue(Queue, object):
         if 'cache_capacity' in kwargs:
             self.cache_capacity = kwargs['cache_capacity']
         else:
-            self.cache_capacity = 0
+            self.cache_capacity = 10000
         self._cache = OrderedDict()
 
     def is_duplicated(self, item):

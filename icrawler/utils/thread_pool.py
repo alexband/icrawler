@@ -42,14 +42,14 @@ class ThreadPool(object):
     def __init__(self, thread_num, in_queue=None, out_queue=None, name=None):
         self.thread_num = thread_num
         self.in_queue = (in_queue
-                         if in_queue else CachedQueue(5 * self.thread_num))
+                         if in_queue else CachedQueue(1000 * self.thread_num))
         self.out_queue = (out_queue
-                          if out_queue else CachedQueue(5 * self.thread_num))
+                          if out_queue else CachedQueue(1000 * self.thread_num))
         self.name = name if name else __name__
         self.workers = []
         self.lock = Lock()
         self.logger = logging.getLogger(self.name)
-        fh = logging.FileHandler('./downloader_output.txt')
+        fh = logging.FileHandler('./%s_output.txt' % name)
         self.logger.addHandler(fh)
 
     def init_workers(self, *args, **kwargs):

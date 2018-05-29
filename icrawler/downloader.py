@@ -28,10 +28,10 @@ class Downloader(ThreadPool):
         storage (BaseStorage): storage backend.
     """
 
-    def __init__(self, thread_num, signal, session, storage):
+    def __init__(self, thread_num, signal, session, storage, name='nature'):
         """Init Parser with some shared variables."""
         super(Downloader, self).__init__(
-            thread_num, out_queue=None, name='downloader')
+            thread_num, out_queue=None, name=name or 'downloader')
         self.signal = signal
         self.session = session
         self.storage = storage
@@ -124,8 +124,8 @@ class Downloader(ThreadPool):
 
         while retry > 0 and not self.signal.get('reach_max_num'):
             try:
-                self.logger.info('image #%s\t%s', self.fetched_num, file_url)
-                # response = self.session.get(file_url, timeout=timeout)
+                # self.logger.info('image #%s\t%s', self.fetched_num, file_url)
+                response = self.session.get(file_url, timeout=timeout)
             except Exception as e:
                 self.logger.error('Exception caught when downloading file %s, '
                                   'error: %s, remaining retry times: %d',
@@ -134,17 +134,17 @@ class Downloader(ThreadPool):
                 if self.reach_max_num():
                     self.signal.set(reach_max_num=True)
                     break
-                #elif response.status_code != 200:
-                #    self.logger.error('Response status code %d, file %s',
-                #                      response.status_code, file_url)
-                #    break
-                #elif not self.keep_file(task, response, **kwargs):
-                #    break
+                elif response.status_code != 200:
+                    self.logger.error('Response status code %d, file %s',
+                                      response.status_code, file_url)
+                    break
+                elif not self.keep_file(task, response, **kwargs):
+                    break
                 with self.lock:
                     self.fetched_num += 1
-                    #filename = self.get_filename(task, default_ext)
-                #self.logger.info('image #%s\t%s', self.fetched_num, file_url)
-                #self.storage.write(filename, response.content)
+                    filename = self.get_filename(task, default_ext)
+                self.logger.info('image #%s\t%s', self.fetched_num, file_url)
+                self.storage.write(filename, response.content)
                 task['success'] = True
                 task['filename'] = self.fetched_num
                 break
